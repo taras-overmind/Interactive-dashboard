@@ -2,16 +2,41 @@ let socket;
 let UI = {};
 let picture = {};
 
+function setup() {
+    initUI();
+    initPicture();
+    initSockets();
+}
 
 function initPicture() {
-
+    picture.canvas = createCanvas(1000, 560);
+    picture.canvas.style('border', '3px solid #000000');
+    picture.prevCoord = null;
+    background(UI.backgroundClrPicker.value);
 }
 
 function initUI() {
 
+
+
 }
 
 function initSockets() {
+    socket = io.connect(window.location.host);
+    let path = processPath();
+
+    socket.on('draw', newDrawing);
+
+    socket.on('path', (data) => {
+        updatePath(data);
+    });
+
+    socket.on('canvas', (data) => {
+        changeBackground(data);
+        redrawLines(data);
+    });
+
+   //...
 
 }
 
@@ -54,6 +79,7 @@ function newDrawing(data) {
     strokeWeight(data.width);
     line(data.start.x, data.start.y, data.end.x, data.end.y);
 }
+
 function redrawLines(data) {
     data.lines.forEach((line) => {
         newDrawing(line);
