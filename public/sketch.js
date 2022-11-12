@@ -16,8 +16,13 @@ function initPicture() {
 }
 
 function initUI() {
-
-
+    UI.backgroundClrPicker = document.getElementById('backgroundColor');
+    UI.brushClrPicker = document.getElementById('colorPicker');
+    UI.widthSlider = document.getElementById('widthSlider');
+    UI.clearAllButton = document.getElementById('clearAll');
+    UI.brush = document.getElementById('brush');
+    UI.clearAllButton.onclick = clearAll;
+    UI.backgroundClrPicker.addEventListener('change', updateBackground, false);
 
 }
 
