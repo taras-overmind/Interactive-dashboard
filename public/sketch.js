@@ -36,7 +36,9 @@ function initSockets() {
         redrawLines(data);
     });
 
-   //...
+    socket.on('clearAll', () => {
+        background(UI.backgroundClrPicker.value);
+    });
 
 }
 
@@ -79,10 +81,38 @@ function newDrawing(data) {
     strokeWeight(data.width);
     line(data.start.x, data.start.y, data.end.x, data.end.y);
 }
+function changeBackground(data) {
+    if (data.background != null) {
+        background(data.background);
+        UI.backgroundClrPicker.value = data.background;
+    }
+}
+function updatePath(data) {
+    let url = `${window.location.protocol}//${window.location.host}${data}`;
+    window.history.pushState({}, '', url);
+}
+
+function processPath() {
+    let path = window.location.pathname;
+    if (path.length > 0) {
+        path = path.slice(1);
+    }
+    socket.emit('room', path);
+    return path;
+}
 
 function redrawLines(data) {
     data.lines.forEach((line) => {
         newDrawing(line);
     });
+}
+
+function clearAll() {
+    background(UI.backgroundClrPicker.value);
+    socket.emit('clearAll');
+}
+
+function updateBackground() {
+    socket.emit('background', UI.backgroundClrPicker.value);
 }
 
