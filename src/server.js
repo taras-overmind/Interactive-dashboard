@@ -4,7 +4,7 @@ let app = express();
 let server = app.listen(process.env.PORT || 3000);
 let socket = require('socket.io');
 let io = socket(server);
-let crypto = require('crypto');
+let crypto = require('crypto');git
 const rooms = new Map();
 const timeToClose = 1000 * 60 * 60;
 app.use(express.static('public'));
@@ -41,7 +41,7 @@ function newConnection(socket) {
 }
 
 function disconnectUser(roomId) {
-    if (roomExsists(roomId)) {
+    if (roomExists(roomId)) {
         rooms.get(roomId).users.delete(socket.id);
 
         if (rooms.get(roomId).users.size == 0) {
@@ -55,4 +55,60 @@ function disconnectUser(roomId) {
         }
     }
 }
+function deleteRoom(roomId) {
+    if (roomExists(roomId)) {
+        rooms.delete(roomId);
+
+        ConsoleLog.closeRoom(roomId);
+        ConsoleLog.roomsCount();
+    }
+}
+
+function roomExists(data) {
+    return rooms.has(data);
+}
+
+function stopTimeOut(roomId) {
+    if (rooms.get(roomId).timeout != null) {
+        clearTimeout(rooms.get(roomId).timeout);
+        rooms.get(roomId).timeout = null;
+    }
+}
+
+function addUserToRoom(socket, roomId) {
+    rooms.get(roomId).users.add(socket.id);
+    socket.join(roomId);
+    ConsoleLog.userJoin(socket, roomId);
+}
+function createRoom(socket, roomId) {
+    rooms.set(roomId, {
+        users: new Set([socket.id]),
+        lines: new Array(),
+        background: null,
+        timeout: null,
+    });
+
+    socket.join(roomId);
+    socket.emit('path', '/' + roomId);
+    ConsoleLog.userJoin(socket, roomId);
+}
+
+function roomProcess(socket, data) {
+    let roomId;
+
+    if (roomExists(data)) {
+        roomId = data;
+        stopTimeOut(roomId);
+        addUserToRoom(socket, roomId);
+        loadCanvasToUser(socket, roomId);
+    } else {
+        roomId = crypto.randomBytes(10).toString('hex');
+        createRoom(socket, roomId);
+    }
+    ConsoleLog.roomsCount();
+
+    return roomId;
+}
+
+
 
