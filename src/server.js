@@ -121,19 +121,19 @@ function loadCanvasToUser(socket, roomId) {
 function changeBackground(roomId, data) {
     ConsoleLog.backgroundChange();
 
-    if (roomExsists(roomId)) {
+    if (roomExists(roomId)) {
         rooms.get(roomId).background = data;
     }
 }
 function draw(roomId, data) {
-    if (roomExsists(roomId)) {
+    if (roomExists(roomId)) {
         rooms.get(roomId).lines.push(data);
     }
 
     io.to(roomId).emit('draw', data);
 }
 function clearAllStuff(socket, roomId) {
-    if (roomExsists(roomId)) {
+    if (roomExists(roomId)) {
         rooms.get(roomId).lines = [];
     }
 
