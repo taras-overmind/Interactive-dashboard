@@ -109,6 +109,39 @@ function roomProcess(socket, data) {
 
     return roomId;
 }
+function loadCanvasToUser(socket, roomId) {
+    socket.emit('canvas', {
+        lines: rooms.get(roomId).lines,
+        background: rooms.get(roomId).background,
+    });
+    ConsoleLog.sentLines();
+}
 
 
+function changeBackground(roomId, data) {
+    ConsoleLog.backgroundChange();
 
+    if (roomExsists(roomId)) {
+        rooms.get(roomId).background = data;
+    }
+}
+function draw(roomId, data) {
+    if (roomExsists(roomId)) {
+        rooms.get(roomId).lines.push(data);
+    }
+
+    io.to(roomId).emit('draw', data);
+}
+function clearAllStuff(socket, roomId) {
+    if (roomExsists(roomId)) {
+        rooms.get(roomId).lines = [];
+    }
+
+    socket.to(roomId).emit('clearAll');
+}
+function redrawLines(roomId, data) {
+    io.to(roomId).emit('canvas', {
+        lines: rooms.get(roomId).lines,
+        background: data,
+    });
+}
