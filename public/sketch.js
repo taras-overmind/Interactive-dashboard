@@ -75,6 +75,9 @@ function mouseDragged() {
         y: mouseY,
     };
 }
+function mouseReleased() {
+    picture.prevCoord = null;
+}
 
 function newDrawing(data) {
     if (data.color === null) {
@@ -119,5 +122,8 @@ function clearAll() {
 
 function updateBackground() {
     socket.emit('background', UI.backgroundClrPicker.value);
+}
+function saveImage() {
+    saveCanvas(picture.canvas, 'My_beautiful_drawing', 'jpg');
 }
 
