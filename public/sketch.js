@@ -255,6 +255,6 @@ function updateBackground() {
     socket.emit('background', UI.backgroundClrPicker.value);
 }
 function saveImage() {
-    saveCanvas(picture.canvas, 'My_beautiful_drawing', 'jpg');
+    saveCanvas(picture.canvas, 'picture', 'jpg');
 }
 
