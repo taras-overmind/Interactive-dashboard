@@ -4,7 +4,7 @@ let app = express();
 let server = app.listen(process.env.PORT || 3000);
 let socket = require('socket.io');
 let io = socket(server);
-let crypto = require('crypto');git
+let crypto = require('crypto');
 const rooms = new Map();
 const timeToClose = 1000 * 60 * 60;
 app.use(express.static('public'));
@@ -25,7 +25,7 @@ function newConnection(socket) {
         disconnectUser(roomId);
     });
 
-    // receiving info about new line from client and sending it to all other clients
+
     socket.on('draw', (data) => {
         draw(roomId, data);
     });
@@ -44,7 +44,7 @@ function disconnectUser(roomId) {
     if (roomExists(roomId)) {
         rooms.get(roomId).users.delete(socket.id);
 
-        if (rooms.get(roomId).users.size == 0) {
+        if (rooms.get(roomId).users.size === 0) {
             ConsoleLog.closingRoom(roomId);
 
             rooms.get(roomId).timeout = setTimeout(
@@ -121,19 +121,19 @@ function loadCanvasToUser(socket, roomId) {
 function changeBackground(roomId, data) {
     ConsoleLog.backgroundChange();
 
-    if (roomExsists(roomId)) {
+    if (roomExists(roomId)) {
         rooms.get(roomId).background = data;
     }
 }
 function draw(roomId, data) {
-    if (roomExsists(roomId)) {
+    if (roomExists(roomId)) {
         rooms.get(roomId).lines.push(data);
     }
 
     io.to(roomId).emit('draw', data);
 }
 function clearAllStuff(socket, roomId) {
-    if (roomExsists(roomId)) {
+    if (roomExists(roomId)) {
         rooms.get(roomId).lines = [];
     }
 
@@ -144,4 +144,40 @@ function redrawLines(roomId, data) {
         lines: rooms.get(roomId).lines,
         background: data,
     });
+}
+class ConsoleLog {
+    static userJoin(socket, roomId) {
+        console.log(
+            socket.id,
+            'connected to',
+            roomId,
+            'with',
+            rooms.get(roomId).users.size,
+            'users'
+        );
+    }
+
+    static newConnection(socket) {
+        console.log('new connection:', socket.id);
+    }
+
+    static roomsCount() {
+        console.log('rooms:', rooms.size);
+    }
+
+    static sentLines() {
+        console.log('sent lines');
+    }
+
+    static closingRoom(roomId) {
+        console.log('closing room', roomId);
+    }
+
+    static backgroundChange() {
+        console.log('background changed');
+    }
+
+    static closeRoom(roomId) {
+        console.log('close room', roomId);
+    }
 }
